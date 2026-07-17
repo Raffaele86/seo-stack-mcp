@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets / env (never commit)
+.env
+.env.*
+!.env.example
+*.env
+drop.env
+secrets.*
+*.pem
+*.key
+id_ed25519
+id_rsa
+id_ecdsa
+
+# Data / dumps
+*.db
+*.sqlite*
+*.bak
+*.old
+*.pre
+leads-*.json
+*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
