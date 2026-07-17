@@ -1,5 +1,7 @@
 # seo-stack-mcp
 
+<!-- mcp-name: io.github.Raffaele86/seo-stack-mcp -->
+
 **The complete open-source SEO data stack for AI agents.** Google Search Console, Google Analytics 4, Bing Webmaster Tools and Microsoft Clarity in a single MCP server — with built-in analyst tools (cannibalization check, low-hanging fruit, content gap, weekly report), not just raw API wrappers.
 
 Self-hosted, free, MIT. Works with Claude Desktop, Claude Code, Cursor, and any MCP client.

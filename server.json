@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
   "name": "io.github.Raffaele86/seo-stack-mcp",
   "description": "GSC, GA4, Bing Webmaster and Microsoft Clarity in one MCP server, with built-in SEO analyst tools",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "url": "https://github.com/Raffaele86/seo-stack-mcp",
     "source": "github"
@@ -11,7 +11,7 @@
     {
       "registryType": "pypi",
       "identifier": "seo-stack-mcp",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         { "name": "GOOGLE_APPLICATION_CREDENTIALS", "description": "Path to a Google service-account JSON key (enables GSC + GA4)", "isRequired": false },
