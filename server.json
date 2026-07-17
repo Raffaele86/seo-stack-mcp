@@ -1,28 +1,26 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
   "name": "io.github.Raffaele86/seo-stack-mcp",
-  "description": "The complete open-source SEO data stack for AI agents — Google Search Console, GA4, Bing Webmaster and Microsoft Clarity in one MCP server, with built-in analyst tools.",
+  "description": "GSC, GA4, Bing Webmaster and Microsoft Clarity in one MCP server, with built-in SEO analyst tools",
+  "version": "0.1.0",
   "repository": {
     "url": "https://github.com/Raffaele86/seo-stack-mcp",
     "source": "github"
   },
-  "version_detail": {
-    "version": "0.1.0"
-  },
   "packages": [
     {
-      "registry_name": "pypi",
-      "name": "seo-stack-mcp",
+      "registryType": "pypi",
+      "identifier": "seo-stack-mcp",
       "version": "0.1.0",
-      "runtime_hint": "uvx",
-      "environment_variables": [
-        { "name": "GOOGLE_APPLICATION_CREDENTIALS", "description": "Path to a Google service-account JSON key (enables GSC + GA4)", "is_required": false },
-        { "name": "SEO_STACK_OAUTH_CLIENT", "description": "Path to a Google OAuth desktop client secrets JSON (alternative to service account)", "is_required": false },
-        { "name": "GA4_PROPERTY_ID", "description": "Default GA4 property ID", "is_required": false },
-        { "name": "GSC_SITE_URL", "description": "Default Search Console property (e.g. sc-domain:example.com)", "is_required": false },
-        { "name": "BING_WEBMASTER_API_KEY", "description": "Bing Webmaster Tools API key (enables Bing tools)", "is_required": false },
-        { "name": "BING_SITE_URL", "description": "Default Bing site URL", "is_required": false },
-        { "name": "CLARITY_API_TOKEN", "description": "Microsoft Clarity Data Export API token (enables Clarity tools)", "is_required": false }
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        { "name": "GOOGLE_APPLICATION_CREDENTIALS", "description": "Path to a Google service-account JSON key (enables GSC + GA4)", "isRequired": false },
+        { "name": "SEO_STACK_OAUTH_CLIENT", "description": "Path to a Google OAuth desktop client secrets JSON (alternative to service account)", "isRequired": false },
+        { "name": "GA4_PROPERTY_ID", "description": "Default GA4 property ID", "isRequired": false },
+        { "name": "GSC_SITE_URL", "description": "Default Search Console property (e.g. sc-domain:example.com)", "isRequired": false },
+        { "name": "BING_WEBMASTER_API_KEY", "description": "Bing Webmaster Tools API key (enables Bing tools)", "isRequired": false, "isSecret": true },
+        { "name": "BING_SITE_URL", "description": "Default Bing site URL", "isRequired": false },
+        { "name": "CLARITY_API_TOKEN", "description": "Microsoft Clarity Data Export API token (enables Clarity tools)", "isRequired": false, "isSecret": true }
       ]
     }
   ]
