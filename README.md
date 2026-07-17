@@ -34,6 +34,8 @@ Add to your MCP client config (Claude Desktop `claude_desktop_config.json`, Curs
 
 Every env var is optional — set only the sources you want. That's it: restart your client and ask *"what are my top queries this week?"*.
 
+To run the latest development version straight from GitHub, use `"args": ["--from", "git+https://github.com/Raffaele86/seo-stack-mcp", "seo-stack-mcp"]` instead.
+
 ### Credentials
 
 | Source | What you need | Where to get it |
