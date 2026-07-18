@@ -147,6 +147,10 @@ Optional defaults: `GSC_SITE_URL`, `BING_SITE_URL` (so you don't repeat the site
 
 Both are good and this project doesn't pretend otherwise. Google's official [analytics-mcp](https://github.com/googleanalytics/google-analytics-mcp) covers GA4 only; [mcp-gsc](https://github.com/AminForou/mcp-gsc) covers GSC only. If you live in one data source, use them. This project is for people who work across the whole free SEO stack and want the cross-source workflow (GSC + GA4 + Bing + Clarity) plus opinionated analysis tools in one place.
 
+## See also
+
+[local-leads-mcp](https://github.com/Raffaele86/local-leads-mcp) — the prospecting counterpart: find local businesses with no website via OpenStreetMap and verify them, no API keys needed.
+
 ## License
 
 MIT.
