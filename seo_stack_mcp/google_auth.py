@@ -33,6 +33,13 @@ if os.getenv("SEO_STACK_READONLY"):
         "https://www.googleapis.com/auth/analytics.readonly",
     ]
 
+# AdSense is opt-in via ADSENSE_ACCOUNT_ID. The scope is only requested when
+# the source is enabled, so existing cached OAuth tokens keep working for
+# users who don't use AdSense. If you enable AdSense after a first OAuth run,
+# delete the cached token in ~/.config/seo-stack-mcp/ to re-consent.
+if os.getenv("ADSENSE_ACCOUNT_ID"):
+    SCOPES.append("https://www.googleapis.com/auth/adsense.readonly")
+
 CONFIG_DIR = Path(
     os.getenv("SEO_STACK_CONFIG_DIR", Path.home() / ".config" / "seo-stack-mcp")
 )

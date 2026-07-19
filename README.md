@@ -2,13 +2,13 @@
 
 <!-- mcp-name: io.github.Raffaele86/seo-stack-mcp -->
 
-**The complete open-source SEO data stack for AI agents.** Google Search Console, Google Analytics 4, Bing Webmaster Tools and Microsoft Clarity in a single MCP server — with built-in analyst tools (cannibalization check, low-hanging fruit, content gap, weekly report), not just raw API wrappers.
+**The complete open-source SEO data stack for AI agents.** Google Search Console, Google Analytics 4, Bing Webmaster Tools, Microsoft Clarity, Google AdSense, Google Keyword Planner and Open PageRank in a single MCP server — with built-in analyst tools (cannibalization check, low-hanging fruit, content gap, weekly report), not just raw API wrappers.
 
 Self-hosted, free, MIT. Works with Claude Desktop, Claude Code, Cursor, and any MCP client.
 
 ## Why this instead of N separate servers?
 
-- **One install, one config** — instead of wiring up 4 different MCP servers with 4 auth setups.
+- **One install, one config** — instead of wiring up 7 different MCP servers with 7 auth setups.
 - **Analyst tools included** — ask *"which queries are declining this month?"* or *"find my low-hanging-fruit keywords"* and get an answer computed server-side, not a raw data dump your agent has to crunch.
 - **Sources are optional** — configure only what you use; tools appear only for configured sources.
 - **Self-hosted** — your tokens stay on your machine. No third-party hosted gateway reading your Search Console.
@@ -46,8 +46,11 @@ To run the latest development version straight from GitHub, use `"args": ["--fro
 | GSC + GA4 (alt) | OAuth desktop client JSON → `SEO_STACK_OAUTH_CLIENT` | First run opens a browser for consent; refresh token cached in `~/.config/seo-stack-mcp/` |
 | Bing | `BING_WEBMASTER_API_KEY` | [Bing Webmaster Tools](https://www.bing.com/webmasters/) → Settings → API access |
 | Clarity | `CLARITY_API_TOKEN` | [Microsoft Clarity](https://clarity.microsoft.com/) → project → Settings → Data Export API |
+| AdSense | Google credentials above + `ADSENSE_ACCOUNT_ID` (`accounts/pub-XXXX...`) | [AdSense](https://www.google.com/adsense/) → Account → Settings → Account information. Enable the AdSense Management API in Google Cloud. If you use OAuth and enable AdSense later, delete the cached token in `~/.config/seo-stack-mcp/` to re-consent with the new scope |
+| Keyword Planner | `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_REFRESH_TOKEN`, `GOOGLE_ADS_CUSTOMER_ID` (+ `GOOGLE_ADS_LOGIN_CUSTOMER_ID` under an MCC) | [Google Ads API Center](https://ads.google.com/) → developer token (Basic access is enough; API calls are free). Also needs the `google-ads` extra: `uvx --with google-ads seo-stack-mcp` or `pip install seo-stack-mcp[ads]` |
+| Open PageRank | `OPENPAGERANK_API_KEY` | [Open PageRank](https://www.domcop.com/openpagerank/) — free API key, 10,000 calls/hour |
 
-Optional defaults: `GSC_SITE_URL`, `BING_SITE_URL` (so you don't repeat the site on every question).
+Optional defaults: `GSC_SITE_URL`, `BING_SITE_URL` (so you don't repeat the site on every question), `ADSENSE_CURRENCY` (default USD), `GOOGLE_ADS_LOCATION_ID` / `GOOGLE_ADS_LANGUAGE_ID` (Keyword Planner geo/language defaults, default US / English).
 
 ## Tools
 
@@ -141,6 +144,36 @@ Optional defaults: `GSC_SITE_URL`, `BING_SITE_URL` (so you don't repeat the site
 | `clarity_rage_clicks` | Top URLs with rage clicks (fast repeated clicks — user frustration). |
 | `clarity_script_errors` | Top URLs with JS errors + error clicks (technical problems on the page). |
 | `clarity_traffic` | Traffic breakdown from Microsoft Clarity (sessions, bot %, pages per session). |
+
+### Google AdSense (10 tools)
+
+| Tool | Description |
+|---|---|
+| `adsense_alerts` | Active alerts on the AdSense account (severity, type, message). |
+| `adsense_by_ad_unit` | Performance per ad unit: earnings, impressions, clicks, CTR, eCPM. |
+| `adsense_by_country` | Revenue breakdown by country, sorted by earnings. |
+| `adsense_by_platform` | Revenue breakdown by device platform (Desktop, Mobile, Tablet). |
+| `adsense_compare_periods` | Compare two periods with percentage deltas on key metrics. |
+| `adsense_earnings_by_date` | Daily earnings with total, average and trend. |
+| `adsense_earnings_overview` | Earnings overview: estimated earnings, page views, impressions, clicks, RPM, CTR. |
+| `adsense_payments` | Recent payments on the AdSense account. |
+| `adsense_sites` | Sites linked to the AdSense account (domain, state, auto-ads). |
+| `adsense_top_pages` | Top URL channels by revenue (requires URL channels configured in AdSense). |
+
+### Google Keyword Planner (4 tools)
+
+| Tool | Description |
+|---|---|
+| `kp_historical_metrics` | Real historical Keyword Planner metrics for a list of known keywords. |
+| `kp_keyword_ideas` | Keyword ideas with real metrics: volume, competition, top-of-page bids, 12-month volumes. |
+| `kp_status` | Source status: library, credential completeness (masked) and live connection test. |
+| `kp_suggest_geo_target` | Resolve a location name to its geo target constant ID. |
+
+### Open PageRank (1 tool)
+
+| Tool | Description |
+|---|---|
+| `pagerank_score` | Domain authority score (0-10) for up to 100 domains per call, with a local 30-day cache. |
 
 
 ## Why not the official GA4 server or mcp-gsc?

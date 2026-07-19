@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
   "name": "io.github.Raffaele86/seo-stack-mcp",
-  "description": "GSC, GA4, Bing Webmaster and Microsoft Clarity in one MCP server, with built-in SEO analyst tools",
-  "version": "0.1.1",
+  "description": "GSC, GA4, Bing Webmaster, Clarity, AdSense, Keyword Planner and Open PageRank in one MCP server, with built-in SEO analyst tools",
+  "version": "0.2.0",
   "repository": {
     "url": "https://github.com/Raffaele86/seo-stack-mcp",
     "source": "github"
@@ -11,16 +11,25 @@
     {
       "registryType": "pypi",
       "identifier": "seo-stack-mcp",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         { "name": "GOOGLE_APPLICATION_CREDENTIALS", "description": "Path to a Google service-account JSON key (enables GSC + GA4)", "isRequired": false },
         { "name": "SEO_STACK_OAUTH_CLIENT", "description": "Path to a Google OAuth desktop client secrets JSON (alternative to service account)", "isRequired": false },
         { "name": "GA4_PROPERTY_ID", "description": "Default GA4 property ID", "isRequired": false },
         { "name": "GSC_SITE_URL", "description": "Default Search Console property (e.g. sc-domain:example.com)", "isRequired": false },
+        { "name": "ADSENSE_ACCOUNT_ID", "description": "AdSense account (accounts/pub-XXXX...) — enables AdSense tools on top of the Google credentials", "isRequired": false },
+        { "name": "ADSENSE_CURRENCY", "description": "Reporting currency for AdSense tools (default USD)", "isRequired": false },
         { "name": "BING_WEBMASTER_API_KEY", "description": "Bing Webmaster Tools API key (enables Bing tools)", "isRequired": false, "isSecret": true },
         { "name": "BING_SITE_URL", "description": "Default Bing site URL", "isRequired": false },
-        { "name": "CLARITY_API_TOKEN", "description": "Microsoft Clarity Data Export API token (enables Clarity tools)", "isRequired": false, "isSecret": true }
+        { "name": "CLARITY_API_TOKEN", "description": "Microsoft Clarity Data Export API token (enables Clarity tools)", "isRequired": false, "isSecret": true },
+        { "name": "GOOGLE_ADS_DEVELOPER_TOKEN", "description": "Google Ads developer token (enables Keyword Planner tools; needs the google-ads extra)", "isRequired": false, "isSecret": true },
+        { "name": "GOOGLE_ADS_CLIENT_ID", "description": "Google Ads OAuth client id", "isRequired": false },
+        { "name": "GOOGLE_ADS_CLIENT_SECRET", "description": "Google Ads OAuth client secret", "isRequired": false, "isSecret": true },
+        { "name": "GOOGLE_ADS_REFRESH_TOKEN", "description": "Google Ads OAuth refresh token (adwords scope)", "isRequired": false, "isSecret": true },
+        { "name": "GOOGLE_ADS_CUSTOMER_ID", "description": "Google Ads customer id (10 digits)", "isRequired": false },
+        { "name": "GOOGLE_ADS_LOGIN_CUSTOMER_ID", "description": "Manager account id, if the customer is under an MCC", "isRequired": false },
+        { "name": "OPENPAGERANK_API_KEY", "description": "Open PageRank API key (enables the pagerank_score tool)", "isRequired": false, "isSecret": true }
       ]
     }
   ]

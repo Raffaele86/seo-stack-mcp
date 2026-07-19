@@ -4,8 +4,12 @@ Sources are registered only when their credentials are configured:
 
 - GSC + GA4 : GOOGLE_APPLICATION_CREDENTIALS or SEO_STACK_OAUTH_CLIENT
   (GA4 additionally wants GA4_PROPERTY_ID, or pass property_id per call)
+- AdSense   : Google credentials above + ADSENSE_ACCOUNT_ID
 - Bing      : BING_WEBMASTER_API_KEY
 - Clarity   : CLARITY_API_TOKEN
+- Keyword Planner : GOOGLE_ADS_DEVELOPER_TOKEN (+ client id/secret,
+  refresh token, customer id) and the ``google-ads`` extra
+- Open PageRank   : OPENPAGERANK_API_KEY
 """
 
 import logging
@@ -32,6 +36,12 @@ def build_server() -> FastMCP:
         register_ga4(mcp)
         enabled.append("ga4")
 
+        if os.getenv("ADSENSE_ACCOUNT_ID"):
+            from .adsense.tools import register as register_adsense
+
+            register_adsense(mcp)
+            enabled.append("adsense")
+
     if os.getenv("BING_WEBMASTER_API_KEY"):
         from .bing.tools import register as register_bing
 
@@ -44,13 +54,28 @@ def build_server() -> FastMCP:
         register_clarity(mcp)
         enabled.append("clarity")
 
+    if os.getenv("GOOGLE_ADS_DEVELOPER_TOKEN"):
+        from .keyword_planner.tools import register as register_kp
+
+        register_kp(mcp)
+        enabled.append("keyword-planner")
+
+    if os.getenv("OPENPAGERANK_API_KEY"):
+        from .pagerank.tools import register as register_pagerank
+
+        register_pagerank(mcp)
+        enabled.append("pagerank")
+
     if not enabled:
         print(
             "seo-stack-mcp: no data source configured.\n"
             "Set at least one of:\n"
             "  GOOGLE_APPLICATION_CREDENTIALS or SEO_STACK_OAUTH_CLIENT  (GSC + GA4)\n"
+            "  ... + ADSENSE_ACCOUNT_ID                                  (AdSense)\n"
             "  BING_WEBMASTER_API_KEY                                    (Bing Webmaster)\n"
             "  CLARITY_API_TOKEN                                         (Microsoft Clarity)\n"
+            "  GOOGLE_ADS_DEVELOPER_TOKEN + OAuth creds                  (Keyword Planner)\n"
+            "  OPENPAGERANK_API_KEY                                      (Open PageRank)\n"
             "See https://github.com/Raffaele86/seo-stack-mcp#quickstart",
             file=sys.stderr,
         )
