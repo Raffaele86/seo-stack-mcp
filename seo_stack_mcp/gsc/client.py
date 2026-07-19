@@ -43,6 +43,20 @@ def get_indexing_service():
     return _indexing_service
 
 
+def fresh_authorized_http():
+    """Return a new AuthorizedHttp bound to the shared credentials.
+
+    httplib2 is not thread-safe: concurrent ``.execute()`` calls must each use
+    their own http object (``request.execute(http=...)``), one per thread.
+    """
+    import httplib2
+    import google_auth_httplib2
+
+    return google_auth_httplib2.AuthorizedHttp(
+        get_google_credentials(), http=httplib2.Http()
+    )
+
+
 def resolve_site_url(site_url: str | None) -> str:
     """Return the site URL to use: the explicit parameter, or the GSC_SITE_URL env var."""
     if site_url:

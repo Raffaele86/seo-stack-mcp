@@ -5,13 +5,31 @@ All tools accept ``site_url`` explicitly; when omitted, the ``GSC_SITE_URL``
 environment variable is used as fallback.
 """
 
+import asyncio
+
 from .client import (
     get_gsc_service,
     get_indexing_service,
     resolve_site_url,
     query_gsc,
     date_ago,
+    fresh_authorized_http,
 )
+
+
+async def _run_batch(items: list, worker, concurrency: int) -> list:
+    """Run ``worker(item, http)`` concurrently in threads with a concurrency cap.
+
+    Each task gets its own AuthorizedHttp (httplib2 is not thread-safe).
+    Results come back in input order.
+    """
+    sem = asyncio.Semaphore(concurrency)
+
+    async def one(item):
+        async with sem:
+            return await asyncio.to_thread(worker, item, fresh_authorized_http())
+
+    return list(await asyncio.gather(*(one(i) for i in items)))
 
 
 def register(mcp) -> None:
@@ -577,14 +595,14 @@ def register(mcp) -> None:
         """Inspect multiple URLs in batch via the URL Inspection API. Max 50 URLs per call."""
         site_url = resolve_site_url(site_url)
         service = get_gsc_service()
-        results = []
-        for url in urls[:50]:
+
+        def inspect(url, http):
             try:
                 body = {"inspectionUrl": url, "siteUrl": site_url}
-                result = service.urlInspection().index().inspect(body=body).execute()
+                result = service.urlInspection().index().inspect(body=body).execute(http=http)
                 inspection = result.get("inspectionResult", {})
                 index_status = inspection.get("indexStatusResult", {})
-                results.append({
+                return {
                     "url": url,
                     "verdict": index_status.get("verdict", "UNKNOWN"),
                     "coverageState": index_status.get("coverageState", ""),
@@ -593,9 +611,11 @@ def register(mcp) -> None:
                     "lastCrawlTime": index_status.get("lastCrawlTime", ""),
                     "pageFetchState": index_status.get("pageFetchState", ""),
                     "crawledAs": index_status.get("crawledAs", ""),
-                })
+                }
             except Exception as e:
-                results.append({"url": url, "error": str(e)})
+                return {"url": url, "error": str(e)}
+
+        results = await _run_batch(urls[:50], inspect, concurrency=4)
         return {"inspected": len(results), "results": results}
 
     @mcp.tool()
@@ -603,14 +623,17 @@ def register(mcp) -> None:
         """Request indexing for multiple URLs via the Google Indexing API. Max 50 URLs.
         WARNING: Google enforces a daily limit of ~200 requests. Requires the indexing scope."""
         service = get_indexing_service()
-        results = []
-        for url in urls[:50]:
+
+        def publish(url, http):
             try:
                 body = {"url": url, "type": "URL_UPDATED"}
-                result = service.urlNotifications().publish(body=body).execute()
-                results.append({"url": url, "status": "submitted", "response": result})
+                result = service.urlNotifications().publish(body=body).execute(http=http)
+                return {"url": url, "status": "submitted", "response": result}
             except Exception as e:
-                results.append({"url": url, "status": "error", "error": str(e)})
+                return {"url": url, "status": "error", "error": str(e)}
+
+        # concorrenza bassa: il vincolo vero è la quota giornaliera (~200/die)
+        results = await _run_batch(urls[:50], publish, concurrency=3)
         return {"submitted": len([r for r in results if r["status"] == "submitted"]),
                 "errors": len([r for r in results if r["status"] == "error"]),
                 "results": results}
@@ -628,23 +651,20 @@ def register(mcp) -> None:
         """Indexing status summary for multiple URLs: how many indexed, not indexed, and errored."""
         site_url = resolve_site_url(site_url)
         service = get_gsc_service()
-        indexed = 0
-        not_indexed = 0
-        errors = 0
-        details = []
-        for url in urls[:50]:
+
+        def inspect(url, http):
             try:
                 body = {"inspectionUrl": url, "siteUrl": site_url}
-                result = service.urlInspection().index().inspect(body=body).execute()
+                result = service.urlInspection().index().inspect(body=body).execute(http=http)
                 verdict = result.get("inspectionResult", {}).get("indexStatusResult", {}).get("verdict", "UNKNOWN")
-                if verdict == "PASS":
-                    indexed += 1
-                else:
-                    not_indexed += 1
-                details.append({"url": url, "verdict": verdict})
+                return {"url": url, "verdict": verdict}
             except Exception as e:
-                errors += 1
-                details.append({"url": url, "verdict": "ERROR", "error": str(e)})
+                return {"url": url, "verdict": "ERROR", "error": str(e)}
+
+        details = await _run_batch(urls[:50], inspect, concurrency=4)
+        indexed = sum(1 for d in details if d["verdict"] == "PASS")
+        errors = sum(1 for d in details if d["verdict"] == "ERROR")
+        not_indexed = len(details) - indexed - errors
         return {
             "total": len(urls[:50]), "indexed": indexed,
             "not_indexed": not_indexed, "errors": errors,
